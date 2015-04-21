@@ -28,7 +28,7 @@ If you use Cocoa Pods, you can get Motis by adding to your podfile `pod 'Motis',
 - (void)motisTest
 {
 	// Some JSON object
-	NSDictionary *jsonObject = [...];
+	NSDictionary *CjsonObject = [...];
 	
 	// Creating an instance of your class
 	MyClass instance = [[MyClass alloc] init];
@@ -234,7 +234,7 @@ Therefore, our `User` class has an `NSArray` property called `followers` that co
 ```
 #####2.1.3 Automatic Object Creation
 
-When validating autmatically, Motis might attempt to create new instances of your custom objects. For example, if a JSON value is a dictionary and the key-associated property type is a custom object, Motis will try to create recursively a new object of the corresponding type and set it via `-mts_setValuesForKeysWithDictionary:`.
+When validating autmatically, Motis might attempt to create new instances of your custom objects. For example, if a JSON value is a dictionary and the key-associated property type is a custom object, Motis will try to recursively create a new object of the corresponding type and set it via `-mts_setValuesForKeysWithDictionary:`.
 
 This automatic "object creation", that is also done for contents of an array, can be customized and tracked by using the following two methods: one "will"-styled method to notify the user that an object will be created and one "did"-styled method to notify the user that an object has been created.
 
@@ -260,7 +260,7 @@ This automatic "object creation", that is also done for contents of an array, ca
 ```
 ####2.2 Manual Validation
 
-Manual validation is performed before automatic validation and gives the user the oportunity of manually validate a value before any automatic validation is done. Of course, if the user validates manually a value for a given Key, any automatic validation will be performed. 
+Manual validation is performed before automatic validation and gives the user an oportunity to manually validate a value before any automatic validation is done. Of course, if the user manually validates a value for a given Key, any automatic validation will be performed. 
 
 Motis calls the following method to fire manual validation:
 
@@ -304,15 +304,15 @@ To manually validate array content you must override the following method:
 
 ### Thread Safety
 
-Starting at version 1.0.2, Motis can be used simultaneously in multiple threads (is thread safe).
+Starting at version 1.0.2, Motis can be used in multiple threads simultaneously (it is thread safe).
 
 To understand why Motis had this problem, we need to know that Motis cache Objective-C runtime information to increase efficiency. This caching is done using NSMapTable and NSMutableDictionary instances and these objects are not thread safe while reading and editing its content, causing Motis to fail in thread safety. 
 
-However, it is important to understand that at the very end, Motis is using KVC to access and manipulate objects. Therefore, it is the developer reponsibility to make object getters and setters thread safe, otherwise Motis won't be able to make it for you.
+However, it is important to understand that at the very end, Motis is using KVC to access and manipulate objects. Therefore, it is the developer's reponsibility to make object getters and setters thread safe, as Motis won't be able to make it for you.
 
 ### Motis & Core Data
 
-If your project is using **CoreData** and you are dealing with `NSManagedObject` instances, you can still using Motis to map JSON values into your class instances. However, you will have to take care of a few things:
+If your project is using **CoreData** and you are dealing with `NSManagedObject` instances, you can still use Motis to map JSON values into your class instances. However, you will have to take care of a few things:
 
 ####1. Don't use KVC validation
 
@@ -328,7 +328,7 @@ CoreData uses KVC validation to validate `NSManagedObject` properties when perfo
 
 ####2. Help Motis create new instances
 
-When parsing the JSON content into an object, Motis might find `NSDictionay` instances that might be converted into new model object instances. By default Motis, doing introspection, creates a new instnace of the corresponding class type and maps the values contained in the found dictionary recursively. However, when using CoreData you must allocate and initialize `NSManagedObject` instances providing a `NSManagedObjectContext`.
+When parsing the JSON content into an object, Motis might find `NSDictionay` instances that might be converted into new model object instances. By default Motis, doing introspection, creates a new instance of the corresponding class type and maps the values contained in the found dictionary recursively. However, when using CoreData you must allocate and initialize `NSManagedObject` instances providing a `NSManagedObjectContext`.
 
 Therefore, you must override the method `- (id)mts_willCreateObjectOfClass:(Class)typeClass withDictionary:(NSDictionary*)dictionary forKey:(NSString*)key abort:(BOOL*)abort` and return an instnace of `typeClass` having performed Motis with the `dictionary`.
 
